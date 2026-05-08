@@ -1,0 +1,36 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark dorm-navbar fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+            <div class="brand-icon">
+                <i class="bi bi-building"></i>
+            </div>
+            <span>Dorm<span class="brand-highlight">MS</span> — Dormitory Management System</span>
+        </a>
+        <div class="ms-auto d-flex gap-2">
+            <a asp-controller="Account" asp-action="SignIn" class="btn btn-outline-light btn-sm px-3">Login</a>
+            <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-sm px-3">Sign Up</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-overlay"></div>
+    <div class="hero-content text-center">
+        <span class="hero-badge">Student Housing Platform</span>
+        <h1 class="hero-title">Smart <span>Dormitory</span> Management,<br />All in One Place</h1>
+        <p class="hero-subtitle">
+            Everything your hostel needs, in one system. — from room assignments and fee tracking
+            to maintenance requests and student records. Built for administrators and residents alike.
+        </p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+            <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg">Get Started</a>
+            <a asp-controller="Account" asp-action="SignIn" class="btn btn-outline-light btn-lg">Login</a>
+        </div>
+    </div>
+</section>

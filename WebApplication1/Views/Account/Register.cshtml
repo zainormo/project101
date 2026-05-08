@@ -1,0 +1,80 @@
+﻿@{
+    ViewData["Title"] = "Sign In";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/signin.css" />
+}
+
+<div class="signin-page">
+
+    <!-- Left Panel — Form -->
+    <div class="signin-left">
+        <div class="signin-form-wrap">
+            <div class="signin-brand">
+                <div class="brand-icon">
+                    <i class="bi bi-building"></i>
+                </div>
+                <span>Dorm<span class="brand-highlight">MS</span></span>
+            </div>
+
+            <h1 class="signin-title">Please Sign In</h1>
+
+            <form method="post" asp-action="SignIn" asp-controller="Account">
+
+                <!-- Full Name -->
+                <div class="field-group">
+                    <input type="text" name="FullName" class="field-input" placeholder="Enter Your Full Name" required />
+                </div>
+
+                <!-- CNIC -->
+                <div class="field-group">
+                    <input type="text" name="CNIC" class="field-input" placeholder="Enter Your CNIC" maxlength="15" required />
+                </div>
+
+                <!-- Registration Number -->
+                <div class="field-group">
+                    <input type="text" name="RegNumber" class="field-input" placeholder="Enter Your Registration Number" required />
+                </div>
+
+                <!-- Address -->
+                <div class="field-group">
+                    <textarea name="Address" class="field-input field-textarea" placeholder="Enter Your Home Address" rows="2" required></textarea>
+                </div>
+
+                <!-- Security Fee -->
+                <div class="field-group">
+                    <p class="security-label">Security Fee Paid?</p>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="SecurityPaid" value="Yes" required />
+                            <span class="radio-box radio-yes">
+                                <i class="bi bi-check-circle-fill"></i> Yes, Paid
+                            </span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="SecurityPaid" value="No" />
+                            <span class="radio-box radio-no">
+                                <i class="bi bi-x-circle-fill"></i> Not Yet
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Button -->
+                <button type="submit" class="signin-btn">Sign In</button>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- Right Panel — Branding -->
+    <div class="signin-right">
+        <div class="signin-right-content">
+            <h2 class="right-title">Dormitory Management,<br />Simplified</h2>
+            <p class="right-sub">Everything your hostel needs in one system — room assignments, fee tracking, maintenance requests and student records.</p>
+            <a asp-controller="Account" asp-action="Register" class="register-btn">Register</a>
+        </div>
+    </div>
+
+</div>

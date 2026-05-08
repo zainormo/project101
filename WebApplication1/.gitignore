@@ -1,0 +1,53 @@
+# Build Folders (bin, obj)
+bin/
+obj/
+
+# User-specific files
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code settings
+.vscode/
+.history/
+.idea/
+
+# Generated files
+*.dll
+*.exe
+*.dbmdl
+*.pdb
+*.cache
+*.log
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.tmp
+
+# ASP.NET publish output
+wwwroot/
+dist/
+node_modules/
+lib/
+bower_components/
+
+# Rider / JetBrains project files
+*.sln.iml
+
+# Environment & secret files
+.env
+secrets.json
+appsettings.Development.json
+
+# NuGet packages
+*.nupkg
+# The packages folder can be ignored since you can restore with package restore
+packages/
+
+# Other folders that may contain local/generated content
+NewFolder/
