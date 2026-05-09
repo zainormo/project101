@@ -47,7 +47,22 @@
             <div class="login-right">
                 <h2 class="form-heading">Sign in</h2>
 
-                <form method="post" asp-controller="Account" asp-action="Login">
+                @* Show error message if login fails *@
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert-error">
+                        <i class="bi bi-exclamation-circle"></i>
+                        @ViewBag.Error
+                    </div>
+                }
+
+                @* ✅ FIXED: asp-action changed from "Login" to "SignIn" *@
+                <form method="post" asp-controller="Account" asp-action="SignIn">
+                    @Html.AntiForgeryToken()
+
+                    @* Pass the role from URL query string e.g. ?role=Admin *@
+                    <input type="hidden" name="role" value="@Context.Request.Query["role"]" />
+
                     <div class="form-group-custom">
                         <label>Email Address</label>
                         <input type="email" name="email" class="form-input" placeholder="you@example.com" required />
@@ -76,6 +91,7 @@
                         By clicking "Sign in now" you agree to<br />
                         <a href="#">Terms of Service</a> | <a href="#">Privacy Policy</a>
                     </p>
+
                 </form>
             </div>
 

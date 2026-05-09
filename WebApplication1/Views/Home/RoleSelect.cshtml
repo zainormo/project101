@@ -1,0 +1,67 @@
+﻿@{
+    ViewData["Title"] = "Who Are You?";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Who Are You? – DormMS</title>
+    <link rel="stylesheet" href="~/css/roleselect.css" />
+</head>
+<body>
+
+    <div class="role-page">
+
+        <div class="role-overlay"></div>
+
+        <!-- Logo -->
+        <div class="role-logo">
+            <div class="logo-icon">🏢</div>
+            <span>Dorm<strong>MS</strong></span>
+        </div>
+
+        <!-- Center Content -->
+        <div class="role-wrapper">
+
+            <span class="role-badge">Select Your Role</span>
+
+            <h1 class="role-title">Who Are <em>You?</em></h1>
+
+            <p class="role-subtitle">Please select your role to continue</p>
+
+            <div class="role-divider"></div>
+
+            <!-- Cards -->
+            <div class="role-cards">
+
+                <!-- Student Card -->
+                <a href="/Account/SignIn?role=Student" class="role-card student">
+                    <div class="card-icon-wrap">🎓</div>
+                    <h2>Student</h2>
+                    <p>Access your hostel dashboard, bills, notices and complaints</p>
+                    <span class="card-tag">Student Portal</span>
+                    <div class="card-arrow">→</div>
+                </a>
+
+                <!-- Admin Card -->
+                <a href="/Account/SignIn?role=Admin" class="role-card admin">
+                    <div class="card-icon-wrap">🛡️</div>
+                    <h2>Admin</h2>
+                    <p>Manage residents, rooms, billing, complaints and reports</p>
+                    <span class="card-tag">Admin Portal</span>
+                    <div class="card-arrow">→</div>
+                </a>
+
+            </div>
+
+            <a href="/" class="back-link">← Back to Home</a>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

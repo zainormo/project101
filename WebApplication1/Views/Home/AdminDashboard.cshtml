@@ -1,0 +1,243 @@
+﻿@{
+    ViewData["Title"] = "Admin Dashboard";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard – DormMS</title>
+    <link rel="stylesheet" href="~/css/admindashboard.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+    <div class="dashboard-layout">
+
+        <!-- ═══════════════════════════════
+         SIDEBAR
+    ════════════════════════════════ -->
+        <aside class="sidebar">
+
+            <!-- Logo -->
+            <div class="sidebar-logo">
+                <div class="logo-icon">🏢</div>
+                <span>Dorm<strong>MS</strong></span>
+            </div>
+
+            <!-- Admin Info -->
+            <div class="sidebar-admin">
+                <div class="admin-avatar">A</div>
+                <div class="admin-info">
+                    <p class="admin-name">Admin</p>
+                    <p class="admin-role">System Administrator</p>
+                </div>
+            </div>
+
+            <div class="sidebar-divider"></div>
+
+            <!-- Navigation -->
+            <nav class="sidebar-nav">
+                <p class="nav-section-label">Main Menu</p>
+
+                <a href="#" class="nav-item active">
+                    <span class="nav-icon">📊</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">👥</span>
+                    <span>Residents</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">🏠</span>
+                    <span>Rooms</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">💳</span>
+                    <span>Billing</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">⚠️</span>
+                    <span>Complaints</span>
+                    <span class="nav-badge">8</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">📢</span>
+                    <span>Notices</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <span class="nav-icon">📈</span>
+                    <span>Reports</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-divider"></div>
+
+            <!-- Logout -->
+            <a href="/Account/SignIn" class="nav-item logout-btn">
+                <span class="nav-icon">🚪</span>
+                <span>Logout</span>
+            </a>
+
+        </aside>
+
+        <!-- ═══════════════════════════════
+         MAIN CONTENT
+    ════════════════════════════════ -->
+        <main class="main-content">
+
+            <!-- Top Header -->
+            <div class="top-header">
+                <div>
+                    <h1 class="page-title">Dashboard <em>Overview</em></h1>
+                    <p class="page-subtitle">Welcome back, Admin. Here's what's happening today.</p>
+                </div>
+                <div class="header-right">
+                    <div class="date-badge">📅 @DateTime.Now.ToString("dd MMM yyyy")</div>
+                </div>
+            </div>
+
+            <!-- ── Stats Cards ── -->
+            <div class="stats-grid">
+
+                <div class="stat-card blue">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-info">
+                        <p class="stat-label">Total Students</p>
+                        <h2 class="stat-value">125</h2>
+                        <p class="stat-change up">↑ 4 this month</p>
+                    </div>
+                </div>
+
+                <div class="stat-card green">
+                    <div class="stat-icon">🏠</div>
+                    <div class="stat-info">
+                        <p class="stat-label">Total Rooms</p>
+                        <h2 class="stat-value">45</h2>
+                        <p class="stat-change">32 occupied</p>
+                    </div>
+                </div>
+
+                <div class="stat-card orange">
+                    <div class="stat-icon">⚠️</div>
+                    <div class="stat-info">
+                        <p class="stat-label">Pending Complaints</p>
+                        <h2 class="stat-value">8</h2>
+                        <p class="stat-change down">↑ 3 new today</p>
+                    </div>
+                </div>
+
+                <div class="stat-card red">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <p class="stat-label">Due Payments</p>
+                        <h2 class="stat-value">₨12,450</h2>
+                        <p class="stat-change down">5 overdue</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ── Quick Actions ── -->
+            <div class="section-header">
+                <h2 class="section-title">Quick Actions</h2>
+                <p class="section-sub">Common tasks at a glance</p>
+            </div>
+
+            <div class="actions-grid">
+
+                <a href="#" class="action-card">
+                    <div class="action-icon blue-icon">👤</div>
+                    <div class="action-info">
+                        <h3>Add Student</h3>
+                        <p>Register a new resident</p>
+                    </div>
+                    <span class="action-arrow">→</span>
+                </a>
+
+                <a href="#" class="action-card">
+                    <div class="action-icon green-icon">🏠</div>
+                    <div class="action-info">
+                        <h3>Add Room</h3>
+                        <p>Create a new room entry</p>
+                    </div>
+                    <span class="action-arrow">→</span>
+                </a>
+
+                <a href="#" class="action-card">
+                    <div class="action-icon orange-icon">💳</div>
+                    <div class="action-info">
+                        <h3>Generate Bill</h3>
+                        <p>Create payment bills</p>
+                    </div>
+                    <span class="action-arrow">→</span>
+                </a>
+
+                <a href="#" class="action-card">
+                    <div class="action-icon purple-icon">📢</div>
+                    <div class="action-info">
+                        <h3>Post Notice</h3>
+                        <p>Broadcast an announcement</p>
+                    </div>
+                    <span class="action-arrow">→</span>
+                </a>
+
+            </div>
+
+            <!-- ── Recent Activity ── -->
+            <div class="section-header" style="margin-top: 36px;">
+                <h2 class="section-title">Recent Activity</h2>
+                <a href="#" class="see-all">See all →</a>
+            </div>
+
+            <div class="activity-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Room</th>
+                            <th>Action</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><div class="student-cell"><div class="s-avatar">AK</div> Ali Khan</div></td>
+                            <td>Room 12A</td>
+                            <td>Bill Payment</td>
+                            <td>09 May 2026</td>
+                            <td><span class="status paid">Paid</span></td>
+                        </tr>
+                        <tr>
+                            <td><div class="student-cell"><div class="s-avatar">SR">SR</div> Sara Raza</div></td>
+                            <td>Room 08B</td>
+                            <td>Complaint Filed</td>
+                            <td>08 May 2026</td>
+                            <td><span class="status pending">Pending</span></td>
+                        </tr>
+                        <tr>
+                            <td><div class="student-cell"><div class="s-avatar">MF</div> Maria Fatima</div></td>
+                            <td>Room 03C</td>
+                            <td>Room Assigned</td>
+                            <td>07 May 2026</td>
+                            <td><span class="status active">Active</span></td>
+                        </tr>
+                        <tr>
+                            <td><div class="student-cell"><div class="s-avatar">UH</div> Usman Haider</div></td>
+                            <td>Room 15A</td>
+                            <td>Bill Overdue</td>
+                            <td>06 May 2026</td>
+                            <td><span class="status overdue">Overdue</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+    </div>
+
+</body>
+</html>

@@ -6,12 +6,26 @@ namespace WebApplication1.Controllers
 {
     public class HomeController : Controller
     {
+        [HttpGet]
         public IActionResult Index()
         {
             return View();
         }
 
+        [HttpGet]
         public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult RoleSelect()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult AdminDashboard()
         {
             return View();
         }
