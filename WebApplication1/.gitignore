@@ -30,10 +30,9 @@ $RECYCLE.BIN/
 *.tmp
 
 # ASP.NET publish output
-wwwroot/
+# NOTE: wwwroot is NOT ignored — CSS and assets must be tracked!
 dist/
 node_modules/
-lib/
 bower_components/
 
 # Rider / JetBrains project files
@@ -46,8 +45,7 @@ appsettings.Development.json
 
 # NuGet packages
 *.nupkg
-# The packages folder can be ignored since you can restore with package restore
 packages/
 
-# Other folders that may contain local/generated content
+# Other folders
 NewFolder/
