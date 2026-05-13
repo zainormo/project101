@@ -1,0 +1,66 @@
+@model StudentDashboardViewModel
+@{ ViewData["Title"] = "Dashboard"; Layout = "~/Views/Shared/_StudentLayout.cshtml"; }
+
+<div class="topbar animate-in">
+    <div class="topbar-left">
+        <div><div class="greeting">Welcome back, @Model.StudentName 👋</div><div class="greeting-sub">@DateTime.Now.ToString("dddd, MMMM dd yyyy")</div></div>
+    </div>
+    <div class="topbar-right">
+        @if(Model.RoomNo != null){<span class="badge badge-info"><i class="ri-door-lock-line"></i> Room @Model.RoomNo</span>}
+        <span style="font-family:var(--font-mono);font-size:13px;color:var(--text-muted);">@Model.RegNo</span>
+    </div>
+</div>
+
+<div class="grid-2 mb-3">
+    <a href="@Url.Action("Notices","Student")" class="card card-premium animate-in" style="text-decoration:none;color:inherit;">
+        <div class="d-flex items-center gap-2" style="gap:16px;display:flex;align-items:center;">
+            <div class="stat-icon stat-icon-amber" style="width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;"><i class="ri-megaphone-line"></i></div>
+            <div><h3 style="font-size:18px;margin-bottom:4px;">Notices</h3><p style="font-size:13px;color:var(--text-secondary);">View all announcements and updates</p></div>
+        </div>
+        <div style="margin-top:16px;text-align:right;"><span class="btn btn-sm btn-secondary">View Notices <i class="ri-arrow-right-s-line"></i></span></div>
+    </a>
+    <a href="@Url.Action("Bills","Student")" class="card card-premium animate-in" style="text-decoration:none;color:inherit;">
+        <div class="d-flex items-center gap-2" style="gap:16px;display:flex;align-items:center;">
+            <div class="stat-icon stat-icon-indigo" style="width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;"><i class="ri-bank-card-line"></i></div>
+            <div><h3 style="font-size:18px;margin-bottom:4px;">My Bills</h3><p style="font-size:13px;color:var(--text-secondary);">Check dues, history & payments</p></div>
+        </div>
+        <div style="margin-top:16px;text-align:right;"><span class="badge badge-pending">@Model.PendingBills pending</span></div>
+    </a>
+    <a href="@Url.Action("Complaints","Student")" class="card card-premium animate-in" style="text-decoration:none;color:inherit;">
+        <div class="d-flex items-center gap-2" style="gap:16px;display:flex;align-items:center;">
+            <div class="stat-icon stat-icon-red" style="width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;"><i class="ri-alarm-warning-line"></i></div>
+            <div><h3 style="font-size:18px;margin-bottom:4px;">Complaints</h3><p style="font-size:13px;color:var(--text-secondary);">Submit & track your complaints</p></div>
+        </div>
+        <div style="margin-top:16px;text-align:right;"><span class="badge badge-progress">@Model.ActiveComplaints active</span></div>
+    </a>
+    <a href="@Url.Action("AboutHostel","Student")" class="card card-premium animate-in" style="text-decoration:none;color:inherit;">
+        <div class="d-flex items-center gap-2" style="gap:16px;display:flex;align-items:center;">
+            <div class="stat-icon stat-icon-cyan" style="width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;"><i class="ri-information-line"></i></div>
+            <div><h3 style="font-size:18px;margin-bottom:4px;">About Hostel</h3><p style="font-size:13px;color:var(--text-secondary);">Rules, wardens & contact info</p></div>
+        </div>
+        <div style="margin-top:16px;text-align:right;"><span class="btn btn-sm btn-secondary">View Details <i class="ri-arrow-right-s-line"></i></span></div>
+    </a>
+</div>
+
+<div class="card animate-in">
+    <h3 style="font-size:18px;margin-bottom:20px;"><i class="ri-megaphone-line" style="color:var(--warning);margin-right:8px;"></i>Recent Notices</h3>
+    @if(Model.RecentNotices.Any())
+    {
+        @foreach(var n in Model.RecentNotices)
+        {
+            <div style="padding:14px 0;border-bottom:1px solid var(--border);">
+                <div style="display:flex;justify-content:space-between;align-items:start;">
+                    <div>
+                        <div style="font-weight:600;margin-bottom:4px;">@(n.IsPinned ? "📌 " : "")@n.Title</div>
+                        <div style="font-size:13px;color:var(--text-secondary);">@(n.Content.Length > 120 ? n.Content.Substring(0,120) + "..." : n.Content)</div>
+                    </div>
+                    <span style="font-size:12px;color:var(--text-muted);white-space:nowrap;margin-left:16px;">@n.CreatedAt.ToString("MMM dd")</span>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="empty-state"><i class="ri-notification-off-line"></i><h3>No notices yet</h3></div>
+    }
+</div>

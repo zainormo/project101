@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "Admin Dashboard";
     Layout = null;
 }
@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Dashboard – DormMS</title>
-    <link rel="stylesheet" href="~/css/admindashboard.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
 </head>
 <body>
@@ -133,7 +133,7 @@
                     <div class="stat-icon">💰</div>
                     <div class="stat-info">
                         <p class="stat-label">Due Payments</p>
-                        <h2 class="stat-value">₨12,450</h2>
+                        <h2 class="stat-value">PKR 12,450</h2>
                         <p class="stat-change down">5 overdue</p>
                     </div>
                 </div>
@@ -238,6 +238,10 @@
 
         </main>
     </div>
-
+    <button id="themeToggle" class="theme-toggle" type="button" aria-label="Toggle theme">
+        <i id="themeToggleIcon" class="ri-sun-line"></i>
+        <span id="themeToggleLabel" class="theme-toggle-label">Theme</span>
+    </button>
+    <script src="~/js/dms.js" asp-append-version="true"></script>
 </body>
 </html>

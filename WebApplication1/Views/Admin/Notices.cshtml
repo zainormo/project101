@@ -1,0 +1,52 @@
+@model IEnumerable<DormitoryMS.Core.Entities.Notice>
+@{ ViewData["Title"] = "Notices"; Layout = "~/Views/Shared/_AdminLayout.cshtml"; }
+
+<div class="page-header animate-in">
+    <div><h1 class="page-title">Notices</h1><p class="page-subtitle">Manage announcements</p></div>
+    <button class="btn btn-primary" onclick="openPanel('addPanel')"><i class="ri-add-line"></i> Post Notice</button>
+</div>
+
+<div class="grid-2">
+@foreach(var n in Model)
+{
+    <div class="card animate-in @(n.IsPinned?"card-premium":"")">
+        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px;">
+            <h3 style="font-size:18px;font-weight:600;">@(n.IsPinned?"📌 ":"")@n.Title</h3>
+            <span style="font-size:12px;color:var(--text-muted);white-space:nowrap;">@n.CreatedAt.ToString("MMM dd, yyyy")</span>
+        </div>
+        <div style="font-size:14px;color:var(--text-secondary);margin-bottom:16px;white-space:pre-wrap;line-height:1.6;">@n.Content</div>
+        @if(n.ExpiresAt.HasValue){<div style="font-size:12px;color:var(--warning);margin-bottom:16px;"><i class="ri-calendar-line"></i> Expires @n.ExpiresAt.Value.ToString("MMM dd, yyyy")</div>}
+        
+        <div style="display:flex;gap:8px;border-top:1px solid var(--border);padding-top:16px;">
+            <form asp-action="TogglePin" method="post" style="display:inline;">@Html.AntiForgeryToken()<input type="hidden" name="noticeId" value="@n.NoticeId"/><button class="btn btn-sm btn-secondary" title="@(n.IsPinned?"Unpin":"Pin")"><i class="ri-pushpin-line"></i></button></form>
+            <form asp-action="DeleteNotice" method="post" style="display:inline;" onsubmit="return confirm('Delete this notice?')">@Html.AntiForgeryToken()<input type="hidden" name="noticeId" value="@n.NoticeId"/><button class="btn btn-sm btn-danger"><i class="ri-delete-bin-line"></i></button></form>
+        </div>
+    </div>
+}
+</div>
+@if(!Model.Any()){<div class="card empty-state animate-in"><i class="ri-megaphone-line" style="font-size:48px;display:block;margin-bottom:16px;opacity:.5;"></i><h3>No notices</h3></div>}
+
+<!-- Add Panel -->
+<div class="panel-backdrop" id="addBackdrop" onclick="closePanel('addPanel')"></div>
+<div class="slide-panel" id="addPanel">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+        <h3 style="font-size:20px;">Post Notice</h3>
+        <button class="modal-close" onclick="closePanel('addPanel')"><i class="ri-close-line"></i></button>
+    </div>
+    <form asp-action="PostNotice" method="post">
+        @Html.AntiForgeryToken()
+        <div class="form-group"><label class="form-label">Title</label><input name="Title" class="form-control" required /></div>
+        <div class="form-group"><label class="form-label">Content</label><textarea name="Content" class="form-control" rows="6" required></textarea></div>
+        <div class="form-group"><label class="form-label">Expiry Date (Optional)</label><input type="date" name="ExpiresAt" class="form-control" /></div>
+        <div class="form-group" style="display:flex;align-items:center;gap:8px;">
+            <label class="toggle"><input type="checkbox" name="IsPinned" value="true" /><span class="toggle-slider"></span></label>
+            <span style="font-size:14px;color:var(--text-secondary);">Pin to top</span>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;"><i class="ri-send-plane-line"></i> Post Notice</button>
+    </form>
+</div>
+
+<script>
+function openPanel(id){document.getElementById(id).classList.add('open');document.getElementById(id.replace('Panel','Backdrop')).classList.add('open');}
+function closePanel(id){document.getElementById(id).classList.remove('open');document.getElementById(id.replace('Panel','Backdrop')).classList.remove('open');}
+</script>

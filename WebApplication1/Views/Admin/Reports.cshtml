@@ -1,0 +1,217 @@
+@model ReportViewModel
+@{ ViewData["Title"] = "Reports"; Layout = "~/Views/Shared/_AdminLayout.cshtml"; }
+
+<div class="page-header animate-in"><div><h1 class="page-title">Reports &amp; Analytics</h1><p class="page-subtitle">Occupancy and revenue insights</p></div></div>
+
+<div class="filter-tabs animate-in" style="margin-bottom:28px;">
+    <button class="filter-tab @(Model.ActiveTab == "occupancy" ? "active" : "")" onclick="switchTab('occupancy',this)">Occupancy</button>
+    <button class="filter-tab @(Model.ActiveTab == "revenue" ? "active" : "")" onclick="switchTab('revenue',this)">Revenue</button>
+</div>
+
+<div id="tab-occupancy" style="display:@(Model.ActiveTab == "occupancy" ? "block" : "none");">
+    <div class="grid-2">
+        <div class="card animate-in" style="display:flex;align-items:center;justify-content:center;min-height:300px;">
+            <canvas id="occupancyChart" style="max-width:280px;max-height:280px;"></canvas>
+        </div>
+        <div class="card animate-in">
+            <h3 style="font-size:18px;margin-bottom:20px;">Room Occupancy Breakdown</h3>
+            @{
+                var full = Model.Rooms.Count(r => r.IsFull);
+                var empty = Model.Rooms.Count(r => r.OccupiedCount == 0);
+                var partial = Model.Rooms.Count(r => !r.IsFull && r.OccupiedCount > 0);
+                var totalCap = Model.Rooms.Sum(r => r.Capacity);
+                var totalOcc = Model.Rooms.Sum(r => r.OccupiedCount);
+                var occPct = totalCap > 0 ? Math.Round((double)totalOcc / totalCap * 100, 1) : 0;
+            }
+            <div style="margin-bottom:16px;display:flex;justify-content:space-between;padding-bottom:16px;border-bottom:1px solid var(--border);">
+                <span style="color:var(--text-secondary);">Total Capacity</span><span style="font-weight:600;font-size:18px;">@totalCap Beds</span>
+            </div>
+            <div style="margin-bottom:16px;display:flex;justify-content:space-between;padding-bottom:16px;border-bottom:1px solid var(--border);">
+                <span style="color:var(--text-secondary);">Currently Occupied</span><span style="font-weight:600;font-size:18px;color:var(--primary-light);">@totalOcc Beds <small style="font-size:12px;color:var(--text-muted);">(@occPct%)</small></span>
+            </div>
+            <div style="display:flex;gap:16px;margin-top:24px;">
+                <div style="flex:1;text-align:center;background:rgba(239,68,68,0.1);padding:16px;border-radius:var(--radius-sm);"><div style="font-size:24px;font-weight:700;color:var(--danger);">@full</div><div style="font-size:12px;">Full Rooms</div></div>
+                <div style="flex:1;text-align:center;background:rgba(245,158,11,0.1);padding:16px;border-radius:var(--radius-sm);"><div style="font-size:24px;font-weight:700;color:var(--warning);">@partial</div><div style="font-size:12px;">Partial</div></div>
+                <div style="flex:1;text-align:center;background:rgba(16,185,129,0.1);padding:16px;border-radius:var(--radius-sm);"><div style="font-size:24px;font-weight:700;color:var(--success);">@empty</div><div style="font-size:12px;">Empty</div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="tab-revenue" style="display:@(Model.ActiveTab == "revenue" ? "block" : "none");">
+    <div class="grid-2 mb-3">
+        <div class="stat-card animate-in"><div class="stat-icon stat-icon-emerald"><i class="ri-funds-line"></i></div><div class="stat-value">PKR @Model.TotalCollected.ToString("#,##0", System.Globalization.CultureInfo.InvariantCulture)</div><div class="stat-label">Total Revenue Collected</div></div>
+        <div class="stat-card animate-in"><div class="stat-icon stat-icon-amber"><i class="ri-alert-line"></i></div><div class="stat-value">PKR @Model.TotalOutstanding.ToString("#,##0", System.Globalization.CultureInfo.InvariantCulture)</div><div class="stat-label">Total Outstanding Dues</div></div>
+    </div>
+    <div class="card animate-in">
+        <h3 style="font-size:18px;margin-bottom:20px;">Revenue by Month</h3>
+        <div style="position:relative;height:350px;width:100%;">
+            <canvas id="revenueChart"></canvas>
+        </div>
+    </div>
+    <div class="card animate-in" style="margin-top:20px;">
+        <h3 style="font-size:18px;margin-bottom:20px;">Bill Collection Summary</h3>
+        @{
+            var paidCount = Model.Bills.Count(b => b.Status == "Paid");
+            var pendingCount = Model.Bills.Count(b => b.Status == "Pending");
+            var overdueCount = Model.Bills.Count(b => b.Status == "Overdue");
+            var totalBills = Model.Bills.Count();
+            var collectionRate = totalBills > 0 ? Math.Round((double)paidCount / totalBills * 100, 1) : 0;
+        }
+        <div style="display:flex;gap:16px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:120px;text-align:center;background:rgba(16,185,129,0.08);padding:20px;border-radius:var(--radius-sm);border:1px solid rgba(16,185,129,0.15);">
+                <div style="font-size:28px;font-weight:700;color:var(--success);">@paidCount</div><div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Paid Bills</div>
+            </div>
+            <div style="flex:1;min-width:120px;text-align:center;background:rgba(245,158,11,0.08);padding:20px;border-radius:var(--radius-sm);border:1px solid rgba(245,158,11,0.15);">
+                <div style="font-size:28px;font-weight:700;color:var(--warning);">@pendingCount</div><div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Pending</div>
+            </div>
+            <div style="flex:1;min-width:120px;text-align:center;background:rgba(239,68,68,0.08);padding:20px;border-radius:var(--radius-sm);border:1px solid rgba(239,68,68,0.15);">
+                <div style="font-size:28px;font-weight:700;color:var(--danger);">@overdueCount</div><div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Overdue</div>
+            </div>
+            <div style="flex:1;min-width:120px;text-align:center;background:rgba(79,70,229,0.08);padding:20px;border-radius:var(--radius-sm);border:1px solid rgba(79,70,229,0.15);">
+                <div style="font-size:28px;font-weight:700;color:var(--primary-light);">@collectionRate%</div><div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Collection Rate</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@{
+    // Build real revenue data from payments grouped by month
+    var monthlyRevenue = Model.Payments
+        .GroupBy(p => p.Date.ToString("MMM yyyy"))
+        .OrderBy(g => DateTime.ParseExact(g.Key, "MMM yyyy", System.Globalization.CultureInfo.InvariantCulture))
+        .Select(g => new { Month = g.Key, Total = g.Sum(p => p.Amount) })
+        .TakeLast(6)
+        .ToList();
+
+    // Build outstanding by month from unpaid bills
+    var monthlyOutstanding = Model.Bills
+        .Where(b => b.Status != "Paid")
+        .GroupBy(b => b.Month.Length > 10 ? b.Month.Substring(0, Math.Min(b.Month.Length, 8)) : b.Month)
+        .Select(g => new { Month = g.Key, Total = g.Sum(b => b.Amount) })
+        .TakeLast(6)
+        .ToList();
+
+    var revLabels = monthlyRevenue.Any()
+        ? string.Join(",", monthlyRevenue.Select(r => $"'{r.Month}'"))
+        : "'No Data'";
+    var revData = monthlyRevenue.Any()
+        ? string.Join(",", monthlyRevenue.Select(r => r.Total))
+        : "0";
+}
+
+<script>
+function switchTab(t,el){document.querySelectorAll('.filter-tab').forEach(b=>b.classList.remove('active'));el.classList.add('active');document.getElementById('tab-occupancy').style.display=t==='occupancy'?'block':'none';document.getElementById('tab-revenue').style.display=t==='revenue'?'block':'none';}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+    var gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(15,23,42,0.08)';
+    var textColor = isDark ? '#94A3B8' : '#475569';
+
+    Chart.defaults.color = textColor;
+    Chart.defaults.font.family = "'DM Sans', sans-serif";
+    Chart.defaults.font.size = 12;
+
+    // Occupancy Doughnut
+    var ctxOcc = document.getElementById('occupancyChart');
+    if (ctxOcc) {
+        new Chart(ctxOcc.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Occupied', 'Available'],
+                datasets: [{
+                    data: [@totalOcc, @(totalCap - totalOcc)],
+                    backgroundColor: [
+                        isDark ? 'rgba(79,70,229,0.8)' : 'rgba(79,70,229,0.7)',
+                        isDark ? 'rgba(255,255,255,0.06)' : 'rgba(15,23,42,0.08)'
+                    ],
+                    borderColor: ['rgba(79,70,229,0.3)', 'transparent'],
+                    borderWidth: 2,
+                    hoverBorderWidth: 3,
+                    hoverOffset: 6
+                }]
+            },
+            options: {
+                cutout: '72%',
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true, pointStyleWidth: 10 } },
+                    tooltip: {
+                        backgroundColor: isDark ? '#1C2030' : '#fff',
+                        titleColor: isDark ? '#EEF2FF' : '#0D1117',
+                        bodyColor: isDark ? '#8B95B0' : '#475569',
+                        borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(15,23,42,0.1)',
+                        borderWidth: 1,
+                        padding: 12,
+                        cornerRadius: 8,
+                        displayColors: true
+                    }
+                }
+            }
+        });
+    }
+
+    // Revenue Bar Chart — using REAL data from payments
+    var ctxRev = document.getElementById('revenueChart');
+    if (ctxRev) {
+        new Chart(ctxRev.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: [@Html.Raw(revLabels)],
+                datasets: [{
+                    label: 'Revenue Collected',
+                    data: [@Html.Raw(revData)],
+                    backgroundColor: function(ctx) {
+                        var chart = ctx.chart;
+                        var {ctx: c, chartArea} = chart;
+                        if (!chartArea) return '#10B981';
+                        var gradient = c.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                        gradient.addColorStop(0, 'rgba(16,185,129,0.6)');
+                        gradient.addColorStop(1, 'rgba(6,182,212,0.8)');
+                        return gradient;
+                    },
+                    borderRadius: 8,
+                    borderSkipped: false,
+                    maxBarThickness: 48
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: true, position: 'top', align: 'end', labels: { usePointStyle: true, pointStyleWidth: 10, padding: 16 } },
+                    tooltip: {
+                        backgroundColor: isDark ? '#1C2030' : '#fff',
+                        titleColor: isDark ? '#EEF2FF' : '#0D1117',
+                        bodyColor: isDark ? '#8B95B0' : '#475569',
+                        borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(15,23,42,0.1)',
+                        borderWidth: 1,
+                        padding: 12,
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: function(ctx) { return 'PKR ' + ctx.raw.toLocaleString(); }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: gridColor, drawBorder: false },
+                        border: { display: false },
+                        ticks: {
+                            padding: 8,
+                            callback: function(val) { return 'PKR ' + (val >= 1000 ? (val/1000).toFixed(0) + 'k' : val); }
+                        }
+                    },
+                    x: {
+                        grid: { display: false },
+                        border: { display: false },
+                        ticks: { padding: 8 }
+                    }
+                }
+            }
+        });
+    }
+});
+</script>

@@ -1,39 +1,34 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
-using WebApplication1.Models;
 
-namespace WebApplication1.Controllers
+namespace DormitoryMS.Controllers;
+
+public class HomeController : Controller
 {
-    public class HomeController : Controller
+    public IActionResult Index()
     {
-        [HttpGet]
-        public IActionResult Index()
-        {
-            return View();
-        }
+        return View();
+    }
 
-        [HttpGet]
-        public IActionResult Privacy()
+    public IActionResult Error(int? statusCode)
+    {
+        if (statusCode == 404)
         {
-            return View();
+            ViewBag.ErrorCode = "404";
+            ViewBag.ErrorMessage = "Page Not Found";
+            ViewBag.ErrorDescription = "The page you're looking for doesn't exist or has been moved.";
         }
-
-        [HttpGet]
-        public IActionResult RoleSelect()
+        else if (statusCode == 403)
         {
-            return View();
+            ViewBag.ErrorCode = "403";
+            ViewBag.ErrorMessage = "Access Denied";
+            ViewBag.ErrorDescription = "You don't have permission to access this resource.";
         }
-
-        [HttpGet]
-        public IActionResult AdminDashboard()
+        else
         {
-            return View();
+            ViewBag.ErrorCode = "500";
+            ViewBag.ErrorMessage = "Something Went Wrong";
+            ViewBag.ErrorDescription = "An unexpected error occurred. Please try again or contact the administrator.";
         }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
+        return View();
     }
 }

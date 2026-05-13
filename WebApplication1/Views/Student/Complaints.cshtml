@@ -1,0 +1,39 @@
+@model ComplaintViewModel
+@{ ViewData["Title"] = "Complaints"; Layout = "~/Views/Shared/_StudentLayout.cshtml"; }
+
+<div class="page-header animate-in">
+    <div><h1 class="page-title">Complaints</h1><p class="page-subtitle">Submit and track your complaints</p></div>
+    <button class="btn btn-primary" onclick="document.getElementById('cf').style.display=document.getElementById('cf').style.display==='none'?'block':'none'"><i class="ri-add-line"></i> Lodge Complaint</button>
+</div>
+
+<div class="card animate-in" id="cf" style="display:none;margin-bottom:24px;">
+    <h3 style="font-size:18px;margin-bottom:20px;">New Complaint</h3>
+    <form asp-action="SubmitComplaint" asp-controller="Student" method="post">
+        @Html.AntiForgeryToken()
+        <div class="form-group"><label class="form-label">Category</label>
+            <select name="category" class="form-control" required>
+                <option value="Maintenance">Maintenance</option><option value="Noise">Noise</option>
+                <option value="Cleanliness">Cleanliness</option><option value="WiFi">WiFi</option>
+                <option value="Security">Security</option><option value="Other">Other</option>
+            </select>
+        </div>
+        <div class="form-group"><label class="form-label">Issue</label><input name="issue" class="form-control" placeholder="Brief description" required /></div>
+        <div class="form-group"><label class="form-label">Description</label><textarea name="description" class="form-control" rows="3"></textarea></div>
+        <button type="submit" class="btn btn-primary"><i class="ri-send-plane-line"></i> Submit</button>
+    </form>
+</div>
+
+@foreach(var c in Model.Complaints)
+{
+    var sc = c.Status switch { "Pending"=>"badge-pending","InProgress"=>"badge-progress","Resolved"=>"badge-resolved",_=>"badge-rejected" };
+<div class="card animate-in" style="margin-bottom:12px;">
+    <div style="display:flex;justify-content:space-between;align-items:start;gap:8px;">
+        <div><div style="font-weight:600;margin-bottom:6px;">@c.Issue</div><span class="badge badge-info">@c.Category</span> <span class="badge @sc">@c.Status</span></div>
+        <span style="font-size:12px;color:var(--text-muted);">@c.CreatedAt.ToString("MMM dd")</span>
+    </div>
+    @if(!string.IsNullOrEmpty(c.Description)){<p style="margin-top:12px;font-size:14px;color:var(--text-secondary);">@c.Description</p>}
+    @if(!string.IsNullOrEmpty(c.AdminReply)){<div style="margin-top:12px;padding:12px;background:rgba(79,70,229,0.08);border-radius:var(--radius-sm);border-left:3px solid var(--primary);font-size:14px;"><strong style="color:var(--primary-light);">Admin:</strong> @c.AdminReply</div>}
+</div>
+}
+
+@if(!Model.Complaints.Any()){<div class="card empty-state animate-in"><i class="ri-chat-check-line" style="font-size:48px;display:block;margin-bottom:16px;opacity:0.5;"></i><h3>No complaints</h3></div>}

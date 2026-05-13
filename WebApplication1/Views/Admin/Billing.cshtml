@@ -1,0 +1,110 @@
+@model BillingViewModel
+@{ ViewData["Title"] = "Billing"; Layout = "~/Views/Shared/_AdminLayout.cshtml"; }
+
+<div class="page-header animate-in">
+    <div><h1 class="page-title">Billing &amp; Payments</h1><p class="page-subtitle">Manage student dues and view transactions</p></div>
+    <button class="btn btn-primary" onclick="openPanel('genBillPanel')"><i class="ri-add-line"></i> Generate Bills</button>
+</div>
+
+<div class="grid-2 mb-3">
+    <div class="stat-card animate-in"><div class="stat-icon stat-icon-amber"><i class="ri-time-line"></i></div><div class="stat-value">PKR @Model.TotalDue.ToString("#,##0", System.Globalization.CultureInfo.InvariantCulture)</div><div class="stat-label">Total Outstanding</div></div>
+    <div class="stat-card animate-in"><div class="stat-icon stat-icon-emerald"><i class="ri-check-double-line"></i></div><div class="stat-value">PKR @Model.TotalCollected.ToString("#,##0", System.Globalization.CultureInfo.InvariantCulture)</div><div class="stat-label">Total Collected</div></div>
+</div>
+
+<div class="filter-tabs animate-in" style="margin-bottom:24px;">
+    <button class="filter-tab @(Model.ActiveTab == "bills" ? "active" : "")" onclick="switchTab('bills',this)">All Bills</button>
+    <button class="filter-tab @(Model.ActiveTab == "payments" ? "active" : "")" onclick="switchTab('payments',this)">Payment History</button>
+</div>
+
+<div id="tab-bills" style="display:@(Model.ActiveTab == "bills" ? "block" : "none");">
+    <div class="card animate-in" style="overflow-x:auto;padding:0;">
+        <table class="table-premium">
+            <thead><tr><th>Month</th><th>Room</th><th>Amount</th><th>Due Date</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody>
+            @foreach(var b in Model.Bills)
+            {
+                var sc = b.Status == "Paid" ? "badge-paid" : b.Status == "Overdue" ? "badge-overdue" : "badge-pending";
+                <tr>
+                    <td style="font-weight:600;">@b.Month</td>
+                    <td>@(b.Room?.RoomNo ?? "—")</td>
+                    <td style="font-family:var(--font-mono);font-weight:600;">PKR @b.Amount.ToString("#,##0", System.Globalization.CultureInfo.InvariantCulture)</td>
+                    <td>@b.DueDate.ToString("MMM dd, yyyy")</td>
+                    <td><span class="badge @sc">@b.Status</span></td>
+                    <td>
+                        @if(b.Status != "Paid")
+                        {
+                        <form asp-action="MarkBillPaid" method="post" style="display:inline;">@Html.AntiForgeryToken()<input type="hidden" name="billId" value="@b.BillId"/><button class="btn btn-sm btn-success" title="Mark as Paid"><i class="ri-check-line"></i> Mark Paid</button></form>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        @if(!Model.Bills.Any()){<div class="empty-state"><i class="ri-bill-line"></i><h3>No bills found</h3><p>Generate bills to get started</p></div>}
+    </div>
+</div>
+
+<div id="tab-payments" style="display:@(Model.ActiveTab == "payments" ? "block" : "none");">
+    <div class="card animate-in" style="overflow-x:auto;">
+        <div class="payment-history-header">
+            <h3><i class="ri-history-line" style="color:var(--accent);"></i> Payment History</h3>
+            @if(Model.Payments.Any()){
+            <a href="@Url.Action("DownloadPaymentHistory","Admin")" class="btn-outline"><i class="ri-download-2-line"></i> Export CSV</a>
+            }
+        </div>
+        @if(Model.Payments.Any()){
+        <table class="table-premium" style="margin:0 -28px;width:calc(100% + 56px);">
+            <thead><tr><th>Date</th><th>Student</th><th>Bill Month</th><th>Room</th><th>Amount</th><th>Method</th><th>Reference</th></tr></thead>
+            <tbody>
+            @foreach(var p in Model.Payments)
+            {
+                <tr>
+                    <td style="white-space:nowrap;">@p.Date.ToString("MMM dd, yyyy")</td>
+                    <td><div style="font-weight:600;">@p.Student?.Name</div><span style="font-size:11px;color:var(--text-muted);">@p.StudentId</span></td>
+                    <td>@(p.Bill?.Month ?? "—")</td>
+                    <td>@(p.Bill?.Room?.RoomNo ?? "—")</td>
+                    <td style="font-family:var(--font-mono);font-weight:600;color:var(--success);">PKR @p.Amount.ToString("#,##0", System.Globalization.CultureInfo.InvariantCulture)</td>
+                    <td><span class="badge badge-info">@p.Method</span></td>
+                    <td style="font-family:var(--font-mono);font-size:12px;">@(p.Reference ?? "—")</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        } else {
+        <div class="empty-state"><i class="ri-history-line"></i><h3>No payments recorded yet</h3><p>Payments will appear here when students pay their bills</p></div>
+        }
+    </div>
+</div>
+
+<!-- Generate Bills Panel -->
+<div class="panel-backdrop" id="genBillBackdrop" onclick="closePanel('genBillPanel')"></div>
+<div class="slide-panel" id="genBillPanel">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;">
+        <div>
+            <h3 style="font-size:20px;font-family:var(--font-display);">Generate Monthly Bills</h3>
+            <p style="font-size:13px;color:var(--text-muted);margin-top:4px;">Create bills for all active rooms</p>
+        </div>
+        <button class="modal-close" onclick="closePanel('genBillPanel')"><i class="ri-close-line"></i></button>
+    </div>
+    <div class="gen-bill-info">
+        <i class="ri-information-line"></i>
+        <span>This will generate a bill for every <strong>active room</strong> in the dormitory with the specified amount and due date.</span>
+    </div>
+    <form asp-action="GenerateBills" method="post">
+        @Html.AntiForgeryToken()
+        <div class="form-group"><label class="form-label">Billing Month</label>
+            <select name="Month" class="form-control" required>
+                @{ var d = DateTime.Now; for(int i=0;i<6;i++){ var m = d.AddMonths(i).ToString("MMMM yyyy"); <option value="@m">@m</option> } }
+            </select>
+        </div>
+        <div class="form-group"><label class="form-label">Amount (PKR)</label><input name="Amount" type="number" class="form-control" placeholder="e.g. 3424" required min="1" /></div>
+        <div class="form-group"><label class="form-label">Due Date</label><input name="DueDate" type="date" class="form-control" required /></div>
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px;"><i class="ri-check-line"></i> Generate Bills</button>
+    </form>
+</div>
+
+<script>
+function switchTab(t,el){document.querySelectorAll('.filter-tab').forEach(b=>b.classList.remove('active'));el.classList.add('active');document.getElementById('tab-bills').style.display=t==='bills'?'block':'none';document.getElementById('tab-payments').style.display=t==='payments'?'block':'none';}
+function openPanel(id){document.getElementById(id).classList.add('open');document.getElementById(id.replace('Panel','Backdrop')).classList.add('open');}
+function closePanel(id){document.getElementById(id).classList.remove('open');document.getElementById(id.replace('Panel','Backdrop')).classList.remove('open');}
+</script>

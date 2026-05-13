@@ -1,0 +1,58 @@
+@model ComplaintAdminViewModel
+@{ ViewData["Title"] = "Complaints"; Layout = "~/Views/Shared/_AdminLayout.cshtml"; }
+
+<div class="page-header animate-in"><div><h1 class="page-title">Complaints</h1><p class="page-subtitle">Manage student issues</p></div></div>
+
+<div class="filter-tabs animate-in">
+    <a href="@Url.Action("Complaints","Admin",new{status="All"})" class="filter-tab @(string.IsNullOrEmpty(Model.StatusFilter) || Model.StatusFilter=="All"?"active":"")" style="text-decoration:none;">All</a>
+    <a href="@Url.Action("Complaints","Admin",new{status="Pending"})" class="filter-tab @(Model.StatusFilter=="Pending"?"active":"")" style="text-decoration:none;">Pending</a>
+    <a href="@Url.Action("Complaints","Admin",new{status="InProgress"})" class="filter-tab @(Model.StatusFilter=="InProgress"?"active":"")" style="text-decoration:none;">In Progress</a>
+    <a href="@Url.Action("Complaints","Admin",new{status="Resolved"})" class="filter-tab @(Model.StatusFilter=="Resolved"?"active":"")" style="text-decoration:none;">Resolved</a>
+</div>
+
+@foreach(var c in Model.Complaints)
+{
+    var sc = c.Status switch{"Pending"=>"badge-pending","InProgress"=>"badge-progress","Resolved"=>"badge-resolved",_=>"badge-rejected"};
+    <div class="card animate-in" style="margin-bottom:16px;">
+        <div style="display:flex;justify-content:space-between;align-items:start;flex-wrap:wrap;gap:16px;">
+            <div>
+                <div style="font-weight:600;font-size:18px;margin-bottom:8px;">@c.Issue</div>
+                <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;font-size:13px;color:var(--text-secondary);">
+                    <span><i class="ri-user-line"></i> @c.Student?.Name (@c.StudentId)</span>
+                    @if(c.Room != null){<span><i class="ri-door-lock-line"></i> @c.Room.RoomNo</span>}
+                    <span><i class="ri-time-line"></i> @c.CreatedAt.ToString("MMM dd, yyyy")</span>
+                </div>
+                <div style="display:flex;gap:8px;"><span class="badge badge-info">@c.Category</span><span class="badge @sc">@c.Status</span></div>
+            </div>
+            
+            <div style="display:flex;gap:8px;flex-direction:column;align-items:end;">
+                <form asp-action="UpdateComplaintStatus" method="post" style="display:flex;gap:8px;">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="complaintId" value="@c.ComplaintId"/>
+                    <select name="status" class="form-control" style="width:140px;padding:6px 12px;font-size:13px;">
+                        <option value="Pending" selected="@(c.Status=="Pending")">Pending</option>
+                        <option value="InProgress" selected="@(c.Status=="InProgress")">In Progress</option>
+                        <option value="Resolved" selected="@(c.Status=="Resolved")">Resolved</option>
+                        <option value="Rejected" selected="@(c.Status=="Rejected")">Rejected</option>
+                    </select>
+                    <button class="btn btn-sm btn-primary">Update</button>
+                </form>
+                <button class="btn btn-sm btn-secondary" onclick="document.getElementById('reply-@c.ComplaintId').style.display='block'">Reply</button>
+            </div>
+        </div>
+        
+        @if(!string.IsNullOrEmpty(c.Description)){<div style="margin-top:16px;padding:16px;background:var(--bg-elevated);border-radius:var(--radius-sm);font-size:14px;color:var(--text-secondary);">@c.Description</div>}
+        @if(!string.IsNullOrEmpty(c.AdminReply)){<div style="margin-top:16px;padding:16px;background:rgba(79,70,229,0.08);border-radius:var(--radius-sm);border-left:3px solid var(--primary);font-size:14px;"><strong style="color:var(--primary-light);">Your Reply:</strong> @c.AdminReply</div>}
+        
+        <form asp-action="ReplyComplaint" method="post" id="reply-@c.ComplaintId" style="display:none;margin-top:16px;border-top:1px solid var(--border);padding-top:16px;">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="complaintId" value="@c.ComplaintId" />
+            <textarea name="reply" class="form-control" placeholder="Write a reply to the student..." rows="3" required></textarea>
+            <div style="margin-top:12px;display:flex;gap:8px;">
+                <button type="submit" class="btn btn-sm btn-primary">Send Reply</button>
+                <button type="button" class="btn btn-sm btn-secondary" onclick="document.getElementById('reply-@c.ComplaintId').style.display='none'">Cancel</button>
+            </div>
+        </form>
+    </div>
+}
+@if(!Model.Complaints.Any()){<div class="card empty-state animate-in"><i class="ri-chat-check-line" style="font-size:48px;display:block;margin-bottom:16px;opacity:.5;"></i><h3>No complaints</h3></div>}

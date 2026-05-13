@@ -1,0 +1,84 @@
+@{
+    var adminName = User.Identity?.Name ?? "Admin";
+    var initials = string.Join("", adminName.Split(' ').Where(w => w.Length > 0).Select(w => w[0])).ToUpper();
+    if (initials.Length > 2) initials = initials.Substring(0, 2);
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString() ?? "";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+      // Prevent flash of wrong theme
+      (function(){
+        var t = localStorage.getItem('dms-theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', t);
+      })();
+    </script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] — DMS Admin</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.2.0/remixicon.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <button class="mobile-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')">
+        <i class="ri-menu-line"></i>
+    </button>
+
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon"><i class="ri-building-2-line"></i></div>
+            <span class="logo-text">DMS Admin</span>
+        </div>
+        <div class="sidebar-user">
+            <div class="user-avatar">@initials</div>
+            <div class="user-info">
+                <div class="user-name">@adminName</div>
+                <div class="user-role">Administrator</div>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="@Url.Action("Dashboard","Admin")" class="sidebar-link @(currentAction == "Dashboard" ? "active" : "")">
+                <i class="ri-dashboard-line"></i><span class="nav-label">Dashboard</span>
+            </a>
+            <a href="@Url.Action("Residents","Admin")" class="sidebar-link @(currentAction == "Residents" ? "active" : "")">
+                <i class="ri-group-line"></i><span class="nav-label">Residents</span>
+            </a>
+            <a href="@Url.Action("Rooms","Admin")" class="sidebar-link @(currentAction == "Rooms" ? "active" : "")">
+                <i class="ri-door-lock-line"></i><span class="nav-label">Rooms</span>
+            </a>
+            <a href="@Url.Action("Billing","Admin")" class="sidebar-link @(currentAction == "Billing" ? "active" : "")">
+                <i class="ri-money-dollar-circle-line"></i><span class="nav-label">Billing</span>
+            </a>
+            <a href="@Url.Action("Complaints","Admin")" class="sidebar-link @(currentAction == "Complaints" ? "active" : "")">
+                <i class="ri-alarm-warning-line"></i><span class="nav-label">Complaints</span>
+            </a>
+            <a href="@Url.Action("Notices","Admin")" class="sidebar-link @(currentAction == "Notices" ? "active" : "")">
+                <i class="ri-megaphone-line"></i><span class="nav-label">Notices</span>
+            </a>
+            <a href="@Url.Action("Reports","Admin")" class="sidebar-link @(currentAction == "Reports" ? "active" : "")">
+                <i class="ri-bar-chart-box-line"></i><span class="nav-label">Reports</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <a href="@Url.Action("Logout","Auth")" class="sidebar-link">
+                <i class="ri-logout-box-line"></i><span class="nav-label">Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        @RenderBody()
+    </main>
+
+    <button id="themeToggle" class="theme-toggle" type="button" aria-label="Toggle theme">
+        <i id="themeToggleIcon" class="ri-sun-line"></i>
+        <span id="themeToggleLabel" class="theme-toggle-label">Light mode</span>
+    </button>
+
+    @await Html.PartialAsync("_Toast")
+    <script src="~/js/dms.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

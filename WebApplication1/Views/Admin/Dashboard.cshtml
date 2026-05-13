@@ -1,0 +1,59 @@
+@model AdminDashboardViewModel
+@{ ViewData["Title"] = "Dashboard"; Layout = "~/Views/Shared/_AdminLayout.cshtml"; }
+
+<div class="page-header animate-in"><div><h1 class="page-title">Dashboard</h1><p class="page-subtitle">Overview of your dormitory</p></div></div>
+
+<div class="stat-grid">
+    <div class="stat-card animate-in"><div class="stat-icon stat-icon-indigo"><i class="ri-group-line"></i></div><div class="stat-value">@Model.TotalStudents</div><div class="stat-label">Total Students</div></div>
+    <div class="stat-card animate-in"><div class="stat-icon stat-icon-cyan"><i class="ri-door-lock-line"></i></div><div class="stat-value">@Model.TotalRooms</div><div class="stat-label">Total Rooms</div></div>
+    <div class="stat-card animate-in"><div class="stat-icon stat-icon-amber"><i class="ri-alarm-warning-line"></i></div><div class="stat-value">@Model.PendingComplaints</div><div class="stat-label">Pending Complaints</div></div>
+    <div class="stat-card animate-in"><div class="stat-icon stat-icon-red"><i class="ri-money-dollar-circle-line"></i></div><div class="stat-value">PKR @Model.DueAmount.ToString("#,##0", System.Globalization.CultureInfo.InvariantCulture)</div><div class="stat-label">Due This Month</div></div>
+</div>
+
+<div class="quick-actions">
+    <a href="@Url.Action("Residents","Admin")" class="btn btn-primary animate-in" style="justify-content:center;"><i class="ri-user-add-line"></i> Add Student</a>
+    <a href="@Url.Action("Rooms","Admin")" class="btn btn-accent animate-in" style="justify-content:center;"><i class="ri-door-lock-line"></i> Add Room</a>
+    <a href="@Url.Action("Billing","Admin")" class="btn btn-warning animate-in" style="justify-content:center;"><i class="ri-money-dollar-circle-line"></i> Generate Bill</a>
+    <a href="@Url.Action("Notices","Admin")" class="btn btn-success animate-in" style="justify-content:center;"><i class="ri-megaphone-line"></i> Post Notice</a>
+</div>
+
+<div class="content-grid">
+    <div class="card animate-in">
+        <h3 style="font-size:18px;margin-bottom:20px;"><i class="ri-alarm-warning-line" style="color:var(--warning);margin-right:8px;"></i>Recent Complaints</h3>
+        @if(Model.RecentComplaints.Any())
+        {
+        <table class="table-premium">
+            <thead><tr><th>Student</th><th>Issue</th><th>Status</th><th>Date</th></tr></thead>
+            <tbody>
+            @foreach(var c in Model.RecentComplaints)
+            {
+                var sc = c.Status switch{"Pending"=>"badge-pending","InProgress"=>"badge-progress","Resolved"=>"badge-resolved",_=>"badge-rejected"};
+                <tr><td>@c.Student?.Name</td><td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">@c.Issue</td><td><span class="badge @sc">@c.Status</span></td><td style="white-space:nowrap;">@c.CreatedAt.ToString("MMM dd")</td></tr>
+            }
+            </tbody>
+        </table>
+        } else {<div class="empty-state"><p>No complaints</p></div>}
+    </div>
+    <div>
+        <div class="card animate-in" style="margin-bottom:20px;">
+            <h3 style="font-size:16px;margin-bottom:16px;"><i class="ri-megaphone-line" style="color:var(--accent);margin-right:8px;"></i>Recent Notices</h3>
+            @foreach(var n in Model.RecentNotices.Take(3))
+            {
+            <div style="padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;">
+                <div style="font-weight:600;">@(n.IsPinned?"📌 ":"")@n.Title</div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">@n.CreatedAt.ToString("MMM dd")</div>
+            </div>
+            }
+        </div>
+        <div class="card animate-in">
+            <h3 style="font-size:16px;margin-bottom:16px;"><i class="ri-bank-card-line" style="color:var(--success);margin-right:8px;"></i>Recent Payments</h3>
+            @foreach(var p in Model.RecentPayments.Take(3))
+            {
+            <div style="padding:10px 0;border-bottom:1px solid var(--border);font-size:14px;display:flex;justify-content:space-between;">
+                <div><div style="font-weight:600;">@p.Student?.Name</div><div style="font-size:12px;color:var(--text-muted);">@p.Date.ToString("MMM dd")</div></div>
+                <div style="font-weight:700;color:var(--success);">PKR @p.Amount.ToString("#,##0", System.Globalization.CultureInfo.InvariantCulture)</div>
+            </div>
+            }
+        </div>
+    </div>
+</div>

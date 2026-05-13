@@ -1,0 +1,79 @@
+@model StudentLoginViewModel
+@{
+    ViewData["Title"] = "Student Login";
+    Layout = "_Layout";
+}
+<style>
+    .login-page{min-height:100vh;display:flex;position:relative;}
+    .login-art{flex:1;background:rgba(26,29,39,0.55);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;border-right:1px solid var(--border);}
+    .login-art .art-content{position:relative;z-index:1;text-align:center;padding:40px;}
+    .login-art .art-icon{font-size:80px;margin-bottom:24px;animation:float 4s ease-in-out infinite;}
+    .login-art .art-title{font-family:var(--font-display);font-size:28px;font-weight:700;margin-bottom:12px;}
+    .login-art .art-sub{color:var(--text-secondary);font-size:15px;max-width:300px;}
+    .login-art .orb{position:absolute;border-radius:50%;filter:blur(80px);}
+    .login-art .orb-1{width:300px;height:300px;background:rgba(79,70,229,0.15);top:-80px;left:-80px;animation:float 6s ease-in-out infinite;}
+    .login-art .orb-2{width:200px;height:200px;background:rgba(16,185,129,0.1);bottom:-40px;right:-40px;animation:float 5s ease-in-out infinite 2s;}
+    .login-form-section{flex:1;display:flex;align-items:center;justify-content:center;padding:40px;background:rgba(15,17,23,0.5);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);}
+    .login-form-box{width:100%;max-width:400px;}
+    .login-form-box h2{font-family:var(--font-display);font-size:28px;margin-bottom:8px;}
+    .login-form-box .sub{color:var(--text-secondary);margin-bottom:32px;font-size:14px;}
+    .pw-wrapper{position:relative;}
+    .pw-toggle{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px;}
+    .login-back{display:inline-flex;align-items:center;gap:6px;color:var(--text-secondary);margin-bottom:24px;font-size:14px;}
+    .login-back:hover{color:var(--text-primary);}
+    .reg-notice{background:rgba(79,70,229,0.1);border:1px solid rgba(79,70,229,0.2);border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:24px;font-size:13px;color:var(--primary-light);}
+    .form-links{margin-top:20px;text-align:center;font-size:14px;color:var(--text-secondary);}
+    @@media(max-width:768px){.login-art{display:none;}.login-form-section{padding:24px;}}
+</style>
+
+<div class="login-page dms-photo-page">
+    <div class="dms-page-bg" aria-hidden="true"></div>
+    <div class="login-art">
+        <div class="orb orb-1"></div><div class="orb orb-2"></div>
+        <div class="art-content animate-in">
+            <div class="art-icon">🎓</div>
+            <div class="art-title">Student Portal</div>
+            <div class="art-sub">Access your bills, submit complaints, and stay updated with the latest notices.</div>
+        </div>
+    </div>
+    <div class="login-form-section">
+        <div class="login-form-box animate-in">
+            <a href="@Url.Action("StudentOptions","Auth")" class="login-back"><i class="ri-arrow-left-line"></i> Back</a>
+            <h2>Student Login</h2>
+            <p class="sub">Enter your registration number and password</p>
+
+            @if (TempData["RegNo"] != null)
+            {
+                <div class="reg-notice">
+                    <i class="ri-information-line"></i> Your Registration Number: <strong>@TempData["RegNo"]</strong>
+                </div>
+            }
+
+            <form asp-action="StudentLogin" method="post">
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    <label class="form-label">Registration Number</label>
+                    <input asp-for="RegNo" class="form-control" placeholder="e.g. REG2026001" />
+                    <span asp-validation-for="RegNo" style="color:var(--danger);font-size:12px;"></span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <div class="pw-wrapper">
+                        <input asp-for="Password" class="form-control" type="password" placeholder="Enter password" id="pwField" />
+                        <button type="button" class="pw-toggle" onclick="togglePw()"><i class="ri-eye-line" id="pwIcon"></i></button>
+                    </div>
+                    <span asp-validation-for="Password" style="color:var(--danger);font-size:12px;"></span>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">
+                    <i class="ri-login-box-line"></i> Login
+                </button>
+            </form>
+            <div class="form-links">
+                Don't have an account? <a href="@Url.Action("Register","Auth")">Sign Up</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+function togglePw(){var f=document.getElementById('pwField'),i=document.getElementById('pwIcon');if(f.type==='password'){f.type='text';i.className='ri-eye-off-line';}else{f.type='password';i.className='ri-eye-line';}}
+</script>

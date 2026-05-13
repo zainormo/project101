@@ -1,0 +1,40 @@
+@{
+    ViewData["Title"] = "Student Options";
+    Layout = "_Layout";
+}
+<style>
+    .options-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; }
+    .options-container { text-align: center; }
+    .options-heading { font-family: var(--font-display); font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    .options-sub { color: var(--text-secondary); margin-bottom: 40px; }
+    .option-cards { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; }
+    .option-card {
+        width: 240px; padding: 40px 24px; display: flex; flex-direction: column; align-items: center;
+        background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+        cursor: pointer; transition: all 0.3s ease; text-decoration: none; color: var(--text-primary);
+    }
+    .option-card:hover { transform: translateY(-6px); border-color: var(--border-glow); box-shadow: var(--shadow-glow); color: var(--text-primary); }
+    .option-icon { width: 64px; height: 64px; border-radius: 16px; background: rgba(79,70,229,0.15); color: var(--primary-light); display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 20px; }
+    .option-label { font-family: var(--font-display); font-size: 18px; font-weight: 600; }
+    .back-btn { display: inline-flex; align-items: center; gap: 6px; color: var(--text-secondary); margin-bottom: 32px; font-size: 14px; }
+    .back-btn:hover { color: var(--text-primary); }
+</style>
+
+<div class="options-page dms-photo-page">
+    <div class="dms-page-bg" aria-hidden="true"></div>
+    <div class="options-container">
+        <a href="@Url.Action("RoleSelect","Auth")" class="back-btn animate-in"><i class="ri-arrow-left-line"></i> Back</a>
+        <h1 class="options-heading animate-in">Student Portal</h1>
+        <p class="options-sub animate-in">Login to your account or create a new one</p>
+        <div class="option-cards">
+            <a href="@Url.Action("StudentLogin","Auth")" class="option-card animate-in">
+                <div class="option-icon"><i class="ri-login-box-line"></i></div>
+                <div class="option-label">Login</div>
+            </a>
+            <a href="@Url.Action("Register","Auth")" class="option-card animate-in">
+                <div class="option-icon" style="background:rgba(6,182,212,0.15);color:var(--accent);"><i class="ri-user-add-line"></i></div>
+                <div class="option-label">Sign Up</div>
+            </a>
+        </div>
+    </div>
+</div>

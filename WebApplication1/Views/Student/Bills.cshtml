@@ -1,0 +1,108 @@
+@model BillViewModel
+@{ ViewData["Title"] = "My Bills"; Layout = "~/Views/Shared/_StudentLayout.cshtml"; }
+
+<div class="page-header animate-in"><div><h1 class="page-title">My Bills</h1><p class="page-subtitle">View and pay your dues</p></div></div>
+
+<div class="grid-3 mb-3">
+    <div class="stat-card animate-in"><div class="stat-icon stat-icon-amber"><i class="ri-time-line"></i></div><div class="stat-value">PKR @Model.TotalDue.ToString("#,##0", System.Globalization.CultureInfo.InvariantCulture)</div><div class="stat-label">Total Due</div></div>
+    <div class="stat-card animate-in"><div class="stat-icon stat-icon-emerald"><i class="ri-check-double-line"></i></div><div class="stat-value">PKR @Model.TotalPaid.ToString("#,##0", System.Globalization.CultureInfo.InvariantCulture)</div><div class="stat-label">Total Paid</div></div>
+    <div class="stat-card animate-in"><div class="stat-icon stat-icon-red"><i class="ri-error-warning-line"></i></div><div class="stat-value">PKR @Model.TotalOverdue.ToString("#,##0", System.Globalization.CultureInfo.InvariantCulture)</div><div class="stat-label">Overdue</div></div>
+</div>
+
+<div class="filter-tabs animate-in" style="margin-bottom:24px;">
+    <button class="filter-tab active" data-filter="all" onclick="filterBills('all',this)">All</button>
+    <button class="filter-tab" data-filter="Pending" onclick="filterBills('Pending',this)">Pending</button>
+    <button class="filter-tab" data-filter="Paid" onclick="filterBills('Paid',this)">Paid</button>
+    <button class="filter-tab" data-filter="Overdue" onclick="filterBills('Overdue',this)">Overdue</button>
+</div>
+
+@if(Model.Bills.Any())
+{
+    @foreach(var b in Model.Bills)
+    {
+        var statusClass = b.Status == "Paid" ? "badge-paid" : b.Status == "Overdue" ? "badge-overdue" : "badge-pending";
+    <div class="card animate-in filterable" data-status="@b.Status" style="margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+            <div>
+                <div style="font-weight:600;font-size:16px;">@b.Month</div>
+                <div style="font-size:13px;color:var(--text-secondary);margin-top:4px;">Room @b.Room?.RoomNo · Due @b.DueDate.ToString("MMM dd, yyyy")</div>
+            </div>
+            <div style="text-align:right;">
+                <div style="font-family:var(--font-display);font-size:24px;font-weight:700;">PKR @b.Amount.ToString("#,##0", System.Globalization.CultureInfo.InvariantCulture)</div>
+                <span class="badge @statusClass" style="margin-top:4px;">@b.Status</span>
+            </div>
+        </div>
+        @if(b.Status != "Paid")
+        {
+        <div style="margin-top:16px;border-top:1px solid var(--border);padding-top:16px;">
+            <button class="btn btn-primary btn-sm" onclick="openPayModal(@b.BillId,'@b.Month','@b.Amount','@b.Room?.RoomNo')"><i class="ri-bank-card-line"></i> Pay Now</button>
+        </div>
+        }
+    </div>
+    }
+}
+else
+{
+    <div class="card empty-state animate-in"><i class="ri-bill-line"></i><h3>No bills found</h3><p style="color:var(--text-muted);">Your bills will appear here when generated</p></div>
+}
+
+<!-- Payment History Section -->
+<div class="card animate-in" style="margin-top:32px;">
+    <div class="payment-history-header">
+        <h3><i class="ri-history-line" style="color:var(--accent);"></i> Payment History</h3>
+        @if(Model.PaymentHistory.Any()){
+        <a href="@Url.Action("DownloadPaymentHistory","Student")" class="btn-outline"><i class="ri-download-2-line"></i> Download CSV</a>
+        }
+    </div>
+    @if(Model.PaymentHistory.Any())
+    {
+    <div style="overflow-x:auto;">
+    <table class="table-premium">
+        <thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Reference</th><th>Status</th></tr></thead>
+        <tbody>
+        @foreach(var p in Model.PaymentHistory)
+        {
+            <tr>
+                <td style="white-space:nowrap;">@p.Date.ToString("MMM dd, yyyy")</td>
+                <td style="font-weight:600;color:var(--success);">PKR @p.Amount.ToString("#,##0", System.Globalization.CultureInfo.InvariantCulture)</td>
+                <td><span class="badge badge-info">@p.Method</span></td>
+                <td style="font-family:var(--font-mono);font-size:12px;">@(p.Reference ?? "—")</td>
+                <td><span class="badge badge-paid">@p.Status</span></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    </div>
+    }
+    else
+    {
+    <div class="empty-state" style="padding:40px;"><i class="ri-history-line"></i><h3>No payments yet</h3><p>Your payment history will show up here</p></div>
+    }
+</div>
+
+<!-- Payment Modal -->
+<div class="modal-overlay" id="payModal">
+    <div class="modal">
+        <div class="modal-header"><h3 class="modal-title">Make Payment</h3><button class="modal-close" onclick="closePayModal()"><i class="ri-close-line"></i></button></div>
+        <div class="modal-body">
+        <form asp-action="PayBill" asp-controller="Student" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="billId" id="payBillId" />
+            <div style="background:var(--bg-elevated);padding:16px;border-radius:var(--radius-sm);margin-bottom:20px;">
+                <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="color:var(--text-secondary);">Month</span><span id="payMonth" style="font-weight:600;"></span></div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:8px;"><span style="color:var(--text-secondary);">Room</span><span id="payRoom" style="font-weight:600;"></span></div>
+                <div style="display:flex;justify-content:space-between;"><span style="color:var(--text-secondary);">Amount</span><span id="payAmount" style="font-weight:700;font-size:18px;color:var(--success);"></span></div>
+            </div>
+            <div class="form-group"><label class="form-label">Payment Method</label><select name="method" class="form-control" required><option value="Cash">Cash</option><option value="Online">Online</option><option value="Card">Card</option><option value="BankTransfer">Bank Transfer</option></select></div>
+            <div class="form-group"><label class="form-label">Reference Number (Optional)</label><input name="reference" class="form-control" placeholder="Transaction ID or reference" /></div>
+            <button type="submit" class="btn btn-success" style="width:100%;justify-content:center;"><i class="ri-check-line"></i> Confirm Payment</button>
+        </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function filterBills(f,el){document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');document.querySelectorAll('.filterable').forEach(i=>{i.style.display=(f==='all'||i.dataset.status===f)?'':'none';});}
+function openPayModal(id,month,amt,room){document.getElementById('payBillId').value=id;document.getElementById('payMonth').textContent=month;document.getElementById('payAmount').textContent='PKR '+Number(amt).toLocaleString();document.getElementById('payRoom').textContent=room||'—';document.getElementById('payModal').classList.add('open');}
+function closePayModal(){document.getElementById('payModal').classList.remove('open');}
+</script>

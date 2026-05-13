@@ -1,36 +1,38 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Welcome";
+    Layout = "_Layout";
 }
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark dorm-navbar fixed-top">
-    <div class="container-fluid">
-        <a class="navbar-brand d-flex align-items-center gap-2" href="#">
-            <div class="brand-icon">
-                <i class="bi bi-building"></i>
-            </div>
-            <span>Dorm<span class="brand-highlight">MS</span> — Dormitory Management System</span>
-        </a>
-        <div class="ms-auto d-flex gap-2">
-            <a asp-controller="Account" asp-action="SignIn" class="btn btn-outline-light btn-sm px-3">Login</a>
-            <a asp-controller="Home" asp-action="RoleSelect" class="btn btn-primary btn-sm px-3">Sign Up</a>
-        </div>
-    </div>
-</nav>
+<style>
+    .landing-page { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+    .landing-content { text-align: center; max-width: 700px; padding: 40px 20px; }
+    .landing-logo { width: 80px; height: 80px; border-radius: 20px; background: linear-gradient(135deg, var(--primary), var(--accent)); display: flex; align-items: center; justify-content: center; font-size: 36px; color: white; margin: 0 auto 32px; box-shadow: 0 8px 32px rgba(79,70,229,0.3); }
+    .landing-title { font-family: var(--font-display); font-size: 18px; font-weight: 600; color: var(--text-secondary); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 16px; }
+    .landing-hero { font-family: var(--font-display); font-size: 52px; font-weight: 800; line-height: 1.1; margin-bottom: 24px; }
+    .landing-hero .gradient-text { background: linear-gradient(135deg, var(--primary-light), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .landing-sub { font-size: 18px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 40px; max-width: 500px; margin-left: auto; margin-right: auto; }
+    .landing-cta { display: inline-flex; align-items: center; gap: 10px; padding: 16px 40px; font-size: 16px; }
+    .landing-features { display: flex; gap: 32px; margin-top: 60px; justify-content: center; flex-wrap: wrap; }
+    .landing-feature { display: flex; align-items: center; gap: 8px; color: var(--text-secondary); font-size: 14px; }
+    .landing-feature i { color: var(--accent); font-size: 18px; }
+    .building-art { font-size: 120px; margin-bottom: 24px; animation: float 4s ease-in-out infinite; display: block; }
+</style>
 
-<!-- Hero Section -->
-<section class="hero-section">
-    <div class="hero-overlay"></div>
-    <div class="hero-content text-center">
-        <span class="hero-badge">Student Housing Platform</span>
-        <h1 class="hero-title">Smart <span>Dormitory</span> Management,<br />All in One Place</h1>
-        <p class="hero-subtitle">
-            Everything your hostel needs, in one system. — from room assignments and fee tracking
-            to maintenance requests and student records. Built for administrators and residents alike.
-        </p>
-        <div class="d-flex gap-3 justify-content-center flex-wrap">
-            <a asp-controller="Home" asp-action="RoleSelect" class="btn btn-primary btn-lg">Get Started</a>
-            <a asp-controller="Account" asp-action="SignIn" class="btn btn-outline-light btn-lg">Login</a>
+<div class="landing-page dms-photo-page">
+    <div class="dms-page-bg" aria-hidden="true"></div>
+    <div class="landing-content animate-in">
+        <div class="building-art">🏛️</div>
+        <div class="landing-logo"><i class="ri-building-2-line"></i></div>
+        <div class="landing-title">University Dormitory System</div>
+        <h1 class="landing-hero">Campus housing, <span class="gradient-text">clear & connected</span></h1>
+        <p class="landing-sub">One portal for residence hall life: room assignments, fee notices, maintenance requests, and announcements — built for students and housing staff.</p>
+        <a href="@Url.Action("RoleSelect", "Auth")" class="btn btn-primary landing-cta btn-lg">
+            Get Started <i class="ri-arrow-right-line"></i>
+        </a>
+        <div class="landing-features">
+            <div class="landing-feature"><i class="ri-door-open-line"></i> Rooms &amp; assignments</div>
+            <div class="landing-feature"><i class="ri-bill-line"></i> Fees &amp; notices</div>
+            <div class="landing-feature"><i class="ri-feedback-line"></i> Requests &amp; complaints</div>
         </div>
     </div>
-</section>
+</div>

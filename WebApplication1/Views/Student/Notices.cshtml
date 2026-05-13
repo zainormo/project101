@@ -1,0 +1,55 @@
+@model NoticeViewModel
+@{ ViewData["Title"] = "Notices"; Layout = "~/Views/Shared/_StudentLayout.cshtml"; }
+
+<div class="page-header animate-in">
+    <div><h1 class="page-title">Notices</h1><p class="page-subtitle">Stay updated with announcements</p></div>
+</div>
+
+@if(Model.PinnedNotices.Any())
+{
+<h3 style="font-size:16px;margin-bottom:16px;color:var(--warning);" class="animate-in"><i class="ri-pushpin-line"></i> Pinned</h3>
+@foreach(var n in Model.PinnedNotices)
+{
+<div class="card notice-card pinned animate-in" onclick="this.classList.toggle('expanded')" style="margin-bottom:12px;cursor:pointer;">
+    <div style="display:flex;justify-content:space-between;align-items:start;">
+        <div class="notice-title">📌 @n.Title</div>
+        <span style="font-size:12px;color:var(--text-muted);white-space:nowrap;">@n.CreatedAt.ToString("MMM dd, yyyy")</span>
+    </div>
+    <div class="notice-meta" style="font-size:12px;color:var(--text-muted);margin-top:4px;display:flex;gap:16px;">
+        <span><i class="ri-time-line"></i> @n.CreatedAt.ToString("hh:mm tt")</span>
+        @if(n.ExpiresAt.HasValue){<span><i class="ri-calendar-line"></i> Expires @n.ExpiresAt.Value.ToString("MMM dd")</span>}
+    </div>
+    <div class="notice-content" style="display:none;margin-top:16px;font-size:14px;color:var(--text-secondary);line-height:1.7;white-space:pre-wrap;">@n.Content</div>
+    <div style="margin-top:8px;font-size:12px;color:var(--primary-light);"><i class="ri-arrow-down-s-line"></i> Click to expand</div>
+</div>
+}
+}
+
+<h3 style="font-size:16px;margin:24px 0 16px;" class="animate-in">Recent</h3>
+@if(Model.RecentNotices.Any())
+{
+    @foreach(var n in Model.RecentNotices)
+    {
+    <div class="card notice-card animate-in" onclick="this.classList.toggle('expanded')" style="margin-bottom:12px;cursor:pointer;">
+        <div style="display:flex;justify-content:space-between;align-items:start;">
+            <div class="notice-title">@n.Title</div>
+            <span style="font-size:12px;color:var(--text-muted);white-space:nowrap;">@n.CreatedAt.ToString("MMM dd, yyyy")</span>
+        </div>
+        <div class="notice-content" style="display:none;margin-top:16px;font-size:14px;color:var(--text-secondary);line-height:1.7;white-space:pre-wrap;">@n.Content</div>
+        <div style="margin-top:8px;font-size:12px;color:var(--primary-light);"><i class="ri-arrow-down-s-line"></i> Click to read</div>
+    </div>
+    }
+}
+else
+{
+    <div class="card empty-state animate-in"><i class="ri-file-text-line" style="font-size:48px;display:block;margin-bottom:16px;opacity:0.5;"></i><h3>No notices yet</h3><p style="color:var(--text-muted);">Check back later for updates</p></div>
+}
+
+<script>
+document.querySelectorAll('.notice-card').forEach(function(c){
+    c.addEventListener('click',function(){
+        var content=this.querySelector('.notice-content');
+        if(content)content.style.display=content.style.display==='none'?'block':'none';
+    });
+});
+</script>

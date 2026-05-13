@@ -1,0 +1,46 @@
+@{
+    ViewData["Title"] = "Select Role";
+    Layout = "_Layout";
+}
+<style>
+    .role-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+    .role-container { text-align: center; }
+    .role-heading { font-family: var(--font-display); font-size: 32px; font-weight: 700; margin-bottom: 8px; }
+    .role-sub { color: var(--text-secondary); font-size: 16px; margin-bottom: 48px; }
+    .role-cards { display: flex; gap: 32px; justify-content: center; flex-wrap: wrap; }
+    .role-card {
+        width: 280px; height: 320px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+        background: var(--bg-surface); border: 1px solid var(--border); border-radius: var(--radius-lg); cursor: pointer;
+        transition: all 0.3s ease; text-decoration: none; color: var(--text-primary); position: relative; overflow: hidden;
+    }
+    .role-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--primary), var(--accent)); opacity: 0; transition: opacity 0.3s; }
+    .role-card:hover { transform: translateY(-8px); color: var(--text-primary); }
+    .role-card:hover::before { opacity: 1; }
+    .role-card.student:hover { border-color: var(--border-glow); box-shadow: 0 0 40px rgba(79,70,229,0.2); }
+    .role-card.admin:hover { border-color: rgba(6,182,212,0.4); box-shadow: 0 0 40px rgba(6,182,212,0.15); }
+    .role-icon { width: 80px; height: 80px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 36px; margin-bottom: 24px; }
+    .role-card.student .role-icon { background: rgba(79,70,229,0.15); color: var(--primary-light); }
+    .role-card.admin .role-icon { background: rgba(6,182,212,0.15); color: var(--accent); }
+    .role-label { font-family: var(--font-display); font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+    .role-desc { font-size: 14px; color: var(--text-secondary); }
+</style>
+
+<div class="role-page dms-photo-page">
+    <div class="dms-page-bg" aria-hidden="true"></div>
+    <div class="role-container">
+        <h1 class="role-heading animate-in">Residence portal</h1>
+        <p class="role-sub animate-in">Sign in as a resident or as housing staff</p>
+        <div class="role-cards">
+            <a href="@Url.Action("StudentOptions", "Auth")" class="role-card student animate-in">
+                <div class="role-icon"><i class="ri-graduation-cap-line"></i></div>
+                <div class="role-label">I'm a Student</div>
+                <div class="role-desc">Room, bills, notices &amp; more</div>
+            </a>
+            <a href="@Url.Action("AdminLogin", "Auth")" class="role-card admin animate-in">
+                <div class="role-icon"><i class="ri-shield-user-line"></i></div>
+                <div class="role-label">I'm an Admin</div>
+                <div class="role-desc">Housing operations &amp; records</div>
+            </a>
+        </div>
+    </div>
+</div>

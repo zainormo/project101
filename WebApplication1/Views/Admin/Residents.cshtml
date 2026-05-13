@@ -1,0 +1,125 @@
+@model ResidentListViewModel
+@{ ViewData["Title"] = "Residents"; Layout = "~/Views/Shared/_AdminLayout.cshtml"; }
+
+<div class="page-header animate-in">
+    <div>
+        <h1 class="page-title">Residents</h1>
+        <p class="page-subtitle">Manage dormitory students &amp; room allotments</p>
+    </div>
+    <button class="btn btn-primary" onclick="openPanel('addPanel')"><i class="ri-user-add-line"></i> Add Student</button>
+</div>
+
+<!-- Enhanced Search -->
+<form method="get" class="search-box animate-in" style="margin-bottom:28px;">
+    <i class="ri-search-line"></i>
+    <input type="text" name="search" placeholder="Search by name, RegNo or email..." value="@Model.SearchTerm" autocomplete="off" />
+    @if(!string.IsNullOrWhiteSpace(Model.SearchTerm)){
+    <a href="@Url.Action("Residents","Admin")" style="color:var(--text-muted);font-size:18px;flex-shrink:0;" title="Clear search"><i class="ri-close-circle-line"></i></a>
+    }
+</form>
+
+@if(!string.IsNullOrWhiteSpace(Model.SearchTerm)){
+<p class="animate-in" style="font-size:13px;color:var(--text-muted);margin-bottom:16px;">
+    Showing <strong style="color:var(--text-primary);">@Model.Students.Count()</strong> result(s) for "<strong style="color:var(--primary-light);">@Model.SearchTerm</strong>"
+</p>
+}
+
+<div class="card animate-in" style="overflow-x:auto;padding:0;">
+<table class="table-premium">
+    <thead>
+        <tr>
+            <th>RegNo</th><th>Name</th><th>Room</th><th>Phone</th><th>Email</th><th>Joined</th><th>Status</th><th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach(var s in Model.Students)
+    {
+        <tr>
+            <td style="font-family:var(--font-mono);font-size:13px;color:var(--primary-light);">@s.RegNo</td>
+            <td style="font-weight:600;">@s.Name</td>
+            <td>
+                @if(s.Room != null){
+                <span class="badge badge-info">@s.Room.RoomNo</span>
+                } else {
+                <span style="color:var(--text-muted);">—</span>
+                }
+            </td>
+            <td>@s.Phone</td>
+            <td style="font-size:13px;">@s.Email</td>
+            <td style="white-space:nowrap;">@s.JoinDate.ToString("MMM dd, yyyy")</td>
+            <td><span class="badge @(s.IsActive?"badge-active":"badge-inactive")">@(s.IsActive?"Active":"Inactive")</span></td>
+            <td style="white-space:nowrap;">
+                <div style="display:flex;gap:6px;">
+                    <form asp-action="ToggleStudentStatus" method="post" style="display:inline;">@Html.AntiForgeryToken()<input type="hidden" name="regNo" value="@s.RegNo"/><button type="submit" class="btn btn-sm btn-secondary" title="Toggle status"><i class="ri-toggle-line"></i></button></form>
+                    <button class="btn btn-sm btn-secondary" onclick="editStudent('@s.RegNo','@s.Name','@s.Email','@s.Phone','@s.RoomId')" title="Edit"><i class="ri-edit-line"></i></button>
+                    <form asp-action="DeleteResident" method="post" style="display:inline;" onsubmit="return confirm('Delete this student?')">@Html.AntiForgeryToken()<input type="hidden" name="regNo" value="@s.RegNo"/><button type="submit" class="btn btn-sm btn-danger" title="Delete"><i class="ri-delete-bin-line"></i></button></form>
+                </div>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+@if(!Model.Students.Any()){
+<div class="empty-state" style="padding:60px;">
+    <i class="ri-user-search-line"></i>
+    <h3>No students found</h3>
+    <p>Try a different search or add a new student</p>
+</div>
+}
+</div>
+
+<!-- Add Panel -->
+<div class="panel-backdrop" id="addBackdrop" onclick="closePanel('addPanel')"></div>
+<div class="slide-panel" id="addPanel">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;">
+        <div>
+            <h3 style="font-size:20px;font-family:var(--font-display);">Add Student</h3>
+            <p style="font-size:13px;color:var(--text-muted);margin-top:4px;">Register a new dormitory resident</p>
+        </div>
+        <button class="modal-close" onclick="closePanel('addPanel')"><i class="ri-close-line"></i></button>
+    </div>
+    <form asp-action="AddResident" method="post">
+        @Html.AntiForgeryToken()
+        <div class="form-group"><label class="form-label">Full Name</label><input name="Name" class="form-control" placeholder="Enter student's full name" required /></div>
+        <div class="form-group"><label class="form-label">Email</label><input name="Email" class="form-control" type="email" placeholder="student@email.com" required /></div>
+        <div class="form-group"><label class="form-label">Phone</label><input name="Phone" class="form-control" placeholder="03xx-xxxxxxx" required /></div>
+        <div class="form-group"><label class="form-label">Password</label><input name="Password" class="form-control" type="password" placeholder="Min 6 characters" required minlength="6" /></div>
+        <div class="form-group"><label class="form-label">Room Assignment</label>
+            <select name="RoomId" class="form-control"><option value="">— No Room (Assign Later) —</option>
+            @foreach(var r in Model.AvailableRooms){<option value="@r.RoomId">@r.RoomNo (@r.Type, @r.AvailableSlots slots)</option>}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px;"><i class="ri-check-line"></i> Add Student</button>
+    </form>
+</div>
+
+<!-- Edit Panel -->
+<div class="panel-backdrop" id="editBackdrop" onclick="closePanel('editPanel')"></div>
+<div class="slide-panel" id="editPanel">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;">
+        <div>
+            <h3 style="font-size:20px;font-family:var(--font-display);">Edit Student</h3>
+            <p style="font-size:13px;color:var(--text-muted);margin-top:4px;">Update resident information &amp; allotment</p>
+        </div>
+        <button class="modal-close" onclick="closePanel('editPanel')"><i class="ri-close-line"></i></button>
+    </div>
+    <form asp-action="EditResident" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="RegNo" id="editRegNo" />
+        <div class="form-group"><label class="form-label">Name</label><input name="Name" id="editName" class="form-control" required /></div>
+        <div class="form-group"><label class="form-label">Email</label><input name="Email" id="editEmail" class="form-control" type="email" required /></div>
+        <div class="form-group"><label class="form-label">Phone</label><input name="Phone" id="editPhone" class="form-control" required /></div>
+        <div class="form-group"><label class="form-label">Room Assignment</label>
+            <select name="RoomId" id="editRoom" class="form-control"><option value="">— No Room —</option>
+            @foreach(var r in Model.AvailableRooms){<option value="@r.RoomId">@r.RoomNo (@r.Type)</option>}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px;"><i class="ri-check-line"></i> Save Changes</button>
+    </form>
+</div>
+
+<script>
+function openPanel(id){document.getElementById(id).classList.add('open');document.getElementById(id.replace('Panel','Backdrop')).classList.add('open');}
+function closePanel(id){document.getElementById(id).classList.remove('open');document.getElementById(id.replace('Panel','Backdrop')).classList.remove('open');}
+function editStudent(r,n,e,p,rm){document.getElementById('editRegNo').value=r;document.getElementById('editName').value=n;document.getElementById('editEmail').value=e;document.getElementById('editPhone').value=p;document.getElementById('editRoom').value=rm||'';openPanel('editPanel');}
+</script>

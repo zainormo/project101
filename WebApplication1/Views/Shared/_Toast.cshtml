@@ -1,0 +1,26 @@
+<div class="toast-container">
+    @if (TempData["Success"] != null)
+    {
+        <div class="toast toast-success" id="toast-success">
+            <i class="ri-check-line"></i>
+            <span>@TempData["Success"]</span>
+            <div class="toast-progress"></div>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="toast toast-error" id="toast-error">
+            <i class="ri-error-warning-line"></i>
+            <span>@TempData["Error"]</span>
+            <div class="toast-progress"></div>
+        </div>
+    }
+    @if (TempData["Info"] != null)
+    {
+        <div class="toast toast-info" id="toast-info">
+            <i class="ri-information-line"></i>
+            <span>@TempData["Info"]</span>
+            <div class="toast-progress"></div>
+        </div>
+    }
+</div>

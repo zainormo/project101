@@ -1,0 +1,64 @@
+@model RoomViewModel
+@{ ViewData["Title"] = "Rooms"; Layout = "~/Views/Shared/_AdminLayout.cshtml"; }
+
+<div class="page-header animate-in">
+    <div><h1 class="page-title">Rooms</h1><p class="page-subtitle">Manage dormitory rooms</p></div>
+    <button class="btn btn-primary" onclick="openPanel('addRoomPanel')"><i class="ri-add-line"></i> Add Room</button>
+</div>
+
+<div class="room-grid">
+@foreach(var r in Model.Rooms)
+{
+    var pct = r.Capacity > 0 ? (int)((double)r.OccupiedCount / r.Capacity * 100) : 0;
+    var borderColor = r.IsFull ? "var(--danger)" : r.OccupiedCount > 0 ? "var(--warning)" : "var(--success)";
+    var barColor = r.IsFull ? "var(--danger)" : r.OccupiedCount > 0 ? "var(--warning)" : "var(--success)";
+    <div class="card card-premium animate-in" style="border-left:3px solid @borderColor;">
+        <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:16px;">
+            <div><h3 style="font-size:20px;font-weight:700;">@r.RoomNo</h3><span class="badge badge-info" style="margin-top:4px;">@r.Type</span></div>
+            <span style="font-size:13px;color:var(--text-muted);">Floor @r.Floor</span>
+        </div>
+        <div style="margin-bottom:12px;">
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;">
+                <span style="color:var(--text-secondary);">Occupancy</span>
+                <span style="font-weight:600;">@r.OccupiedCount / @r.Capacity</span>
+            </div>
+            <div class="occupancy-bar"><div class="occupancy-fill" style="width:@(pct)%;background:@barColor;"></div></div>
+        </div>
+        @if(r.Students.Any())
+        {
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
+            <div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">RESIDENTS</div>
+            @foreach(var s in r.Students){<div style="font-size:13px;padding:4px 0;">@s.Name <span style="color:var(--text-muted);font-family:var(--font-mono);font-size:11px;">@s.RegNo</span></div>}
+        </div>
+        }
+        <div style="margin-top:12px;display:flex;gap:8px;">
+            <form asp-action="DeleteRoom" method="post" onsubmit="return confirm('Delete room?')" style="display:inline;">@Html.AntiForgeryToken()<input type="hidden" name="roomId" value="@r.RoomId"/><button class="btn btn-sm btn-danger"><i class="ri-delete-bin-line"></i></button></form>
+        </div>
+    </div>
+}
+</div>
+
+@if(!Model.Rooms.Any()){<div class="card empty-state animate-in"><i class="ri-door-lock-line" style="font-size:48px;display:block;margin-bottom:16px;opacity:.5;"></i><h3>No rooms</h3></div>}
+
+<div class="panel-backdrop" id="addRoomBackdrop" onclick="closePanel('addRoomPanel');this.classList.remove('open')"></div>
+<div class="slide-panel" id="addRoomPanel">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+        <h3 style="font-size:20px;">Add Room</h3>
+        <button class="modal-close" onclick="closePanel('addRoomPanel')"><i class="ri-close-line"></i></button>
+    </div>
+    <form asp-action="AddRoom" method="post">
+        @Html.AntiForgeryToken()
+        <div class="form-group"><label class="form-label">Room Number</label><input name="RoomNo" class="form-control" placeholder="e.g. A-101" required /></div>
+        <div class="form-group"><label class="form-label">Floor</label><input name="Floor" class="form-control" type="number" min="0" required /></div>
+        <div class="form-group"><label class="form-label">Capacity</label><input name="Capacity" class="form-control" type="number" min="1" value="2" required /></div>
+        <div class="form-group"><label class="form-label">Type</label>
+            <select name="Type" class="form-control"><option value="Single">Single</option><option value="Double" selected>Double</option><option value="Triple">Triple</option></select>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;"><i class="ri-check-line"></i> Add Room</button>
+    </form>
+</div>
+
+<script>
+function openPanel(id){document.getElementById(id).classList.add('open');document.getElementById(id.replace('Panel','Backdrop')).classList.add('open');}
+function closePanel(id){document.getElementById(id).classList.remove('open');document.getElementById(id.replace('Panel','Backdrop')).classList.remove('open');}
+</script>
