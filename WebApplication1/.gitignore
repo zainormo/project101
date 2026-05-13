@@ -41,7 +41,8 @@ bower_components/
 # Environment & secret files
 .env
 secrets.json
-appsettings.Development.json
+appsettings.Local.json
+appsettings.*.local.json
 
 # NuGet packages
 *.nupkg
